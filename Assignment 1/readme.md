@@ -17,3 +17,17 @@ Example
 ```bash
 mpirun -n 16 --oversubscribe ./out 2
 ```
+
+# For randomWalk.cpp
+
+To compile the file
+
+```bash
+mpic++ randomWalk.cpp -o out
+```
+
+To run the file
+
+```bash
+mpic++ -n 16 --oversubscribe ./out
+```
