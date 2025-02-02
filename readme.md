@@ -1,7 +1,7 @@
 
 # Assignment Codes for Parallel and Distributed Lab
 
-I am compiling and running the programs locally on linux, so I advice to do the same, or use WSL to use a full fledged linux distro in windows itself
+I am compiling and running the programs locally on linux, so I advice to do the same, or use WSL to use a full fledged linux distro in windows itself.
 
 # To install openMPI
 
@@ -34,7 +34,7 @@ mpirun -n <num_processes> --oversubscribe ./<output_filename>
 
 # Timer.hpp header file
 
-I have created a simple timer class to help with measuring time of execution of tasks efficiently,make sure to include this file before compiling the programs
+I have created a simple timer class to help with measuring time of execution of tasks efficiently,make sure to include this file before compiling the programs.
 
 ```cpp
 #include<Timer.hpp>
@@ -45,4 +45,4 @@ Replace this with
 #include "../helpers/Timer.hpp"
 ```
 
-The Chronos library has to be installed in your c++ compiler for this to work
+The Chronos library has to be installed in your c++ compiler for this header file to work.
