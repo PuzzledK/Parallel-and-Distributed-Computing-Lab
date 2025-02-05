@@ -7,7 +7,12 @@
 
 using namespace std;
 
-void matMul(vector<double> &a,vector<double> &b,vector<double> &c,int rows_per_process){
+void matMul(vector<double> &a,vector<double> &b,vector<double> &c,int rows_per_process,int rank,int size){
+
+    int n = rows_per_process;
+    if(rank == size - 1){
+        n += (size%rank);
+    }
     for(int i = 0;i<rows_per_process;i++){
         for(int j = 0;j<dims;j++){
             c[i*dims + j] = 0;
@@ -53,7 +58,7 @@ int main(){
     MPI_Barrier(MPI_COMM_WORLD);
     if(rank == 0) t.tick();
 
-    matMul(local_a,b,local_c,rows_per_process);
+    matMul(local_a,b,local_c,rows_per_process,rank,size);
 
     MPI_Barrier(MPI_COMM_WORLD);    
     if(rank == 0) t.tock();
@@ -61,10 +66,24 @@ int main(){
     
     if(rank == 0){
         cout<<"PARTIAL COMPUTATION TIME -> "<<t.time()<<endl;
+        vector<double> c_local(dims*dims);
         t.tick();
-        matMul(a,b,c,dims);
+        matMul(a,b,c_local,dims,rank,size);
         t.tock();
         cout<<"SERIAL COMPUTATION TIME -> "<<t.time()<<endl;
+
+        for(int i = 0;i<dims;i++){
+            int bruh = false;
+            for(int j = 0;j<dims;j++){
+                if(c_local[i*dims + j] != c[i*dims + j]){
+                    cout<<"IDHAR GALAT HAI BAWA -> "<<i<<" "<<j<<endl;
+                    bruh = true;
+                    break;
+                }
+            }
+            if(bruh) break;
+        }
+
     }
 
     MPI_Finalize();
