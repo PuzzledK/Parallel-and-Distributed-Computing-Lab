@@ -32,17 +32,17 @@ mpirun -n <num_processes> --oversubscribe ./<output_filename>
 #Use --oversubscribe if you are using more processes than Physical cores on your CPU
 ```
 
-# Timer.hpp header file
+# timer.hpp header file
 
 I have created a simple timer class to help with measuring time of execution of tasks efficiently,make sure to include this file before compiling the programs.
 
 ```cpp
-#include<Timer.hpp>
+#include<timer.hpp>
 ```
 Replace this with
 
 ```cpp
-#include "../helpers/Timer.hpp"
+#include "../helpers/timer.hpp"
 ```
 
 The Chronos library has to be installed in your c++ compiler for this header file to work.

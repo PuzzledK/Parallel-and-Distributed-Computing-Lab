@@ -29,5 +29,5 @@ mpic++ randomWalk.cpp -o out
 To run the file
 
 ```bash
-mpic++ -n 16 --oversubscribe ./out
+mpirun -n 16 --oversubscribe ./out
 ```
