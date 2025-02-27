@@ -37,7 +37,7 @@ vector<int> merge(vector<int> &left,vector<int> &right){
     int i = 0,j = 0;
 
     while(i < n && j < m){
-        while(left[i] < right[j]){
+        while(left[i] <= right[j]){
             ans.push_back(left[i++]);
         }
 
@@ -119,7 +119,7 @@ int main(int argc,char** argv){
 
         bool yes = true;
         for(int i = 0;i<count-1;i++){
-            if(tot_array[i+1] < tot_array[i]){
+            if(tot_array[i+1] <= tot_array[i]){
                 cout<<"WRONG HAI BAAWA AT "<<i<<endl;
                 cout<<tot_array[i-1]<<" "<<tot_array[i]<<endl;
                 yes = false;
