@@ -54,9 +54,10 @@ where:
 
 ### Graphs
 #### Execution Time vs Processors
+
 ```mermaid
-line
-    title Execution Time vs Number of Processors
+barChart
+    title Execution Time Comparison
     x-axis Number of Processors
     y-axis Execution Time (seconds)
     "1 Processor" : 10
@@ -64,7 +65,7 @@ line
     "4 Processors" : 3.5
     "8 Processors" : 2
     "16 Processors" : 1.2
-```
+
 
 #### Speedup vs Processors
 ```mermaid
