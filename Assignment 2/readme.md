@@ -56,26 +56,10 @@ where:
 #### Execution Time vs Processors
 
 ```mermaid
-barChart
-    title Execution Time Comparison
-    x-axis Number of Processors
-    y-axis Execution Time (seconds)
-    "1 Processor" : 10
-    "2 Processors" : 6
-    "4 Processors" : 3.5
-    "8 Processors" : 2
-    "16 Processors" : 1.2
-```
-
-#### Speedup vs Processors
-```mermaid
-line
-    title Speedup vs Number of Processors
-    x-axis Number of Processors
-    y-axis Speedup
-    "1 Processor" : 1
-    "2 Processors" : 1.67
-    "4 Processors" : 2.85
-    "8 Processors" : 5
-    "16 Processors" : 8.3
+xychart-beta
+    title "Sales Revenue"
+    x-axis [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]
+    y-axis "Revenue (in $)" 4000 --> 11000
+    bar [5000, 6000, 7500, 8200, 9500, 10500, 11000, 10200, 9200, 8500, 7000, 6000]
+    line [5000, 6000, 7500, 8200, 9500, 10500, 11000, 10200, 9200, 8500, 7000, 6000]
 ```
