@@ -65,7 +65,7 @@ barChart
     "4 Processors" : 3.5
     "8 Processors" : 2
     "16 Processors" : 1.2
-
+```
 
 #### Speedup vs Processors
 ```mermaid
