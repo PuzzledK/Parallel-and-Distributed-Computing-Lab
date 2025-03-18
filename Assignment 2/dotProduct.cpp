@@ -74,6 +74,7 @@ int main(int argc,char** argv){
     MPI_Gatherv(local_c.data(),send_count[rank],MPI_INT,c.data(),send_count.data(),displacement.data(),MPI_INT,0,MPI_COMM_WORLD);
 
     if(rank == 0){
+        cout<<endl;
         cout<<"EXECUTION TIME => "<<tock - tick<<endl;
 
         vector<int> c_check(nums);
