@@ -37,9 +37,11 @@ vector<int> merge(vector<int> &left,vector<int> &right){
     int i = 0,j = 0;
 
     while(i < n && j < m){
-        if(left[i] <= right[j]){
+        while(left[i] < right[j]){
             ans.push_back(left[i++]);
-        }else{
+        }
+
+        while(left[i] > right[j]){
             ans.push_back(right[j++]);
         }
     }
@@ -71,15 +73,11 @@ int main(int argc,char** argv){
     vector<int> arr;
     if(rank == 0){
         srand(time(NULL));
-        cout<<"ORIGINAL ARRAY -> ";
         for(int i = 0;i<count;i++){
             arr.push_back(rand()%1000);
-            cout<<arr[i]<<" ";
         }
-        cout<<endl;
     }
 
-    MPI_Barrier(MPI_COMM_WORLD);
     vector<int> send_count(world_size,0);
     vector<int> displacement(world_size);
 
@@ -96,19 +94,16 @@ int main(int argc,char** argv){
 
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Scatterv(arr.data(),send_count.data(),displacement.data(),MPI_INT,local_arr.data(),send_count[rank],MPI_INT,0,MPI_COMM_WORLD);
-    MPI_Barrier(MPI_COMM_WORLD);
 
     oddEveSort(local_arr);
 
     MPI_Barrier(MPI_COMM_WORLD);
-    vector<int> tot_array;
 
+    vector<int> tot_array;
     if(rank == 0) tot_array.resize(count);
 
     MPI_Gatherv(local_arr.data(),send_count[rank],MPI_INT,tot_array.data(),send_count.data(),displacement.data(),MPI_INT,0,MPI_COMM_WORLD);
-    
-    MPI_Barrier(MPI_COMM_WORLD);
-
+    cout<<"HERE\n";
     if(rank == 0){
         int offset = send_count[0];
         for(int i = 1;i<world_size;i++){
@@ -116,8 +111,9 @@ int main(int argc,char** argv){
             vector<int> left(tot_array.begin(),tot_array.begin() + offset);
             vector<int> right(tot_array.begin() + offset,tot_array.begin() + offset + send_count[i]);
 
-            vector<int> merged = merge(left,right);
-            tot_array = merged;
+            tot_array = merge(left,right);
+
+            
             offset += send_count[i];
         }
 
@@ -125,16 +121,16 @@ int main(int argc,char** argv){
         for(int i = 0;i<count-1;i++){
             if(tot_array[i+1] < tot_array[i]){
                 cout<<"WRONG HAI BAAWA AT "<<i<<endl;
-                cout<<tot_array[i]<<" "<<tot_array[i+1]<<endl;
+                cout<<tot_array[i-1]<<" "<<tot_array[i]<<endl;
                 yes = false;
                 break;
             }
         }
-
-        if(yes)for(auto i:tot_array){
-            cout<<i<<" ";
+        if(yes){
+            for(auto i:tot_array){
+                cout<<i<<" ";
+                }
         }
-        cout<<endl;
     }
     MPI_Finalize();
 
