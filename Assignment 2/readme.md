@@ -55,11 +55,21 @@ where:
 ### Graphs
 #### Execution Time vs Processors
 
-```mermaid
-xychart-beta
-    title "Sales Revenue"
-    x-axis [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]
-    y-axis "Revenue (in $)" 4000 --> 11000
-    bar [5000, 6000, 7500, 8200, 9500, 10500, 11000, 10200, 9200, 8500, 7000, 6000]
-    line [5000, 6000, 7500, 8200, 9500, 10500, 11000, 10200, 9200, 8500, 7000, 6000]
+```vega-lite
+{
+  "data": {
+    "values": [
+      {"Year": 2020, "AI Adoption Rate": 20},
+      {"Year": 2021, "AI Adoption Rate": 30},
+      {"Year": 2022, "AI Adoption Rate": 40},
+      {"Year": 2023, "AI Adoption Rate": 50},
+      {"Year": 2024, "AI Adoption Rate": 60}
+    ]
+  },
+  "mark": "bar",
+  "encoding": {
+    "x": {"field": "Year", "type": "temporal"},
+    "y": {"field": "AI Adoption Rate", "type": "quantitative"}
+  }
+}
 ```
