@@ -72,4 +72,3 @@ where:
     "y": {"field": "AI Adoption Rate", "type": "quantitative"}
   }
 }
-```
