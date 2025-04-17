@@ -1,12 +1,35 @@
 #include<cuda.h>
 #include<iostream>
+#include<random>
+#include<timer.hpp>
 
 using namespace std;
 
-#define N 10
+#define N 1000
+#define chunk_size 256
+#define threads_per_block 128
 
-void merge(float *arr,int low,int mid,int high){
-    int temp[high + low -1];
+#define cudaCheck(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, const char *file, int line) {
+    if (code != cudaSuccess) {
+        fprintf(stderr,"CUDA Error: %s %s %d\n", cudaGetErrorString(code), file, line);
+        exit(code);
+    }
+}
+
+void generate_random_array(float *arr) {
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_real_distribution<float> dis(0.0f, 1000.0f);
+    
+    for (int i = 0; i < N; ++i) {
+        arr[i] = dis(gen);
+    }
+
+}
+
+__device__ void merge(float *arr,int low,int mid,int high){
+    float* temp = new float[high - low + 1];
     int l = low;
     int r = mid + 1;
     int i = 0;
@@ -34,33 +57,85 @@ void merge(float *arr,int low,int mid,int high){
         arr[i] = temp[i - low]; 
     }
 
+    delete[] temp;
+
 }
 
-void divide(float *nums,int l,int r){
-    if(l>=r) return;
-
-    int mid = l + (r - l) / 2;
-
-    divide(nums,l,mid);
-    divide(nums,mid+1,r);
-
-    merge(nums,l,mid,r);
+__global__ void final_merge_kernel(float* arr, int n, int chunkSize) {
+    for (int curr_size = chunkSize; curr_size < n; curr_size *= 2) {
+        int tid = blockIdx.x * blockDim.x + threadIdx.x;
+        int left = tid * 2 * curr_size;
+        
+        if (left >= n) continue;
+        
+        int mid = min(left + curr_size - 1, n - 1);
+        int right = min(left + 2 * curr_size - 1, n - 1);
+        
+        merge(arr, left, mid, right);
+        
+        __syncthreads();  // Ensure all threads complete before next level
+    }
 }
 
-__global__ void hello(){
+__global__ void divideCuda(float* arr,int n,int chunkSize){
 
     int id = blockIdx.x * blockDim.x + threadIdx.x;
+    int start = id * chunkSize;
 
-    printf("HELLO FROM %d\n",id);
+    if(start > n) return;
+
+    int end = min(start + chunkSize - 1, n - 1);
+
+    for(int curr_size = 1;curr_size <= end - start;curr_size *= 2){
+        for(int left = start;left < end;left += 2*curr_size){
+            int mid = min(left + curr_size - 1, end);
+            int right = min(left + 2*curr_size -1,end);
+
+            merge(arr,left,mid,right);
+        }
+    }
 }
 
 int main(){
-    float nums[] = {23,124,2353,4324,875,347,984732,9875,365,34895};
+    Timer t;
+    float arr[N];
+    generate_random_array(arr);
 
-    // for(int i = 0;i<N;i++){
-    //     cin>>nums[i];
-    // }
+    float* arr_d;
+    cudaCheck(cudaMalloc(&arr_d,N*sizeof(float)));
 
-    divide(nums,0,N-1);
+
+    int num_chunks = (N + chunk_size - 1) / chunk_size;
+
+    dim3 threads(threads_per_block,1,1);
+    dim3 blocks((num_chunks + threads_per_block - 1 ) / threads_per_block,1,1);
+
+    t.tick();
+
+    cudaCheck(cudaMemcpy(arr_d,arr,N*sizeof(float),cudaMemcpyHostToDevice));
+
+    divideCuda<<<blocks,threads>>>(arr_d,N,chunk_size);
+    cudaCheck(cudaGetLastError());
     cudaDeviceSynchronize();
+
+    final_merge_kernel<<<1,256>>>(arr_d,N,chunk_size);
+    cudaCheck(cudaGetLastError());
+    cudaDeviceSynchronize();
+    
+    cudaCheck(cudaMemcpy(arr,arr_d,N*sizeof(float),cudaMemcpyDeviceToHost));
+
+    t.tock();
+
+    cout<<"TIME TAKEN -> "<<t.time()<<endl;
+
+    for (int i = 0; i < N - 1; ++i) {
+        if (arr[i] > arr[i+1]) {
+            cout << "Sorting failed at index " << i << endl;
+            break;
+        }
+    }
+    
+    // Free device memory
+    cudaFree(arr_d);
+
 }
