@@ -73,7 +73,7 @@ __global__ void final_merge_kernel(float* arr, int n, int chunkSize) {
         
         merge(arr, left, mid, right);
         
-        __syncthreads();  // Ensure all threads complete before next level
+        __syncthreads();
     }
 }
 
@@ -135,7 +135,6 @@ int main(){
         }
     }
     
-    // Free device memory
     cudaFree(arr_d);
 
 }
